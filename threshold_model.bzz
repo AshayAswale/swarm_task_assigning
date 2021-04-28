@@ -9,7 +9,7 @@ PHI = 1
 # Spontaneous switching
 # Defined in slide 15
 # Chosen as in slide 17
-P = 0.2
+P = 0.01
 # Number of tasks: if you change this, you must also change the corresponding
 # parameter in the .argos file, line 98!
 TASKS = 2
@@ -45,13 +45,24 @@ function step() {
   # Placeholder code, just to have the robots do something - you'll need to change this!
   # 'task' is expected to be an integer variable, make sure it is at all times!
   # See lines 9-70 to check how the loop functions fetch it from the Buzz scripts
-  task = (task + 1) % TASKS
+  # task = (task + 1) % TASKS
   # The 'threshold' table is read by the ARGoS loop functions, so make sure not to use
   # a different variable name
   # See lines 9-70 to check how the loop functions fetch it from the Buzz scripts
-  threshold[0] = threshold[0] + 1.5
-  threshold[1] = threshold[1] + 2.5
+  threshold[0] = stimulus[0]^2 / (stimulus[0]^2 + threshold[0]^2)
+  threshold[1] = stimulus[1]^2 / (stimulus[1]^2 + threshold[1]^2)
   # Some debug output just for fun
+
+  if (task == 0)
+  {other_task = 1}
+  else
+  {other_task = 0}
+  
+  pswitch = threshold[other_task]/(threshold[task] + threshold[other_task])
+  x = math.rng.uniform(1.0)
+  if((x < pswitch) or (x < P)) {
+    task = other_task
+  }
   debug_output()
 }
 
@@ -63,8 +74,12 @@ function reset() {
   task = 0 # must be an integer between 0 and TASKS-1!
   # Pick initial thresholds for the tasks
   threshold = {}
-  threshold[0] = 500.0 # must be a float between 0.0 and 1000.0!
-  threshold[1] = 500.0 # must be a float between 0.0 and 1000.0!
+  threshold[0] = 25.0 # must be a float between 0.0 and 1000.0!
+  threshold[1] = 25.0 # must be a float between 0.0 and 1000.0!
+
+  stimulus = {}
+  stimulus[0] = 50.0 # must be a float between 0.0 and 1000.0!
+  stimulus[1] = 50.0 # must be a float between 0.0 and 1000.0!
   # Debug output
   debug_output()
 }
@@ -86,5 +101,5 @@ function debug_output() {
   # See: https://the.swarming.buzz/wiki/doku.php?id=buzz_argos
   debug.print("t=", task, "; th0=", threshold[0], "; th1=", threshold[1])
   # Debug message written in the log
-  log("R", id, ": t=", task, "; th0=", threshold[0], "; th1=", threshold[1])
+  log("R", id, ": t=", task, "; th0=", threshold[0], "; th1=", threshold[1], "; stim_1 = ",stimulus[0], "; stim_2 = ",stimulus[1])
 }

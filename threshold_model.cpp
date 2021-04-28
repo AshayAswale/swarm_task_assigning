@@ -1,7 +1,7 @@
 #include "threshold_model.h"
 #include "buzz/buzzvm.h"
 
-static CRange<Real> STIMULUS_RANGE(0.0, 5.0);
+static CRange<Real> STIMULUS_RANGE(0.0, 5000.0);
 
 /****************************************/
 /****************************************/
@@ -112,7 +112,7 @@ void CThresholdModel::Init(TConfigurationNode& t_tree) {
    /* Initialize the stimuli */
    m_vecStimuli.resize(nTasks);
    for(int i = 0; i < m_vecStimuli.size(); ++i) {
-      m_vecStimuli[i] = STIMULUS_RANGE.GetMax();
+      m_vecStimuli[i] = 50;
    }
    /* Open the output file */
    m_cOutFile.open(m_strOutFile.c_str(),
@@ -125,7 +125,7 @@ void CThresholdModel::Init(TConfigurationNode& t_tree) {
 void CThresholdModel::Reset() {
    /* Reset the stimuli */
    for(int i = 0; i < m_vecStimuli.size(); ++i) {
-      m_vecStimuli[i] = STIMULUS_RANGE.GetMax();
+      m_vecStimuli[i] = 50;
    }
    /* Convey the stimuli to every robot */
    BuzzForeachVM(PutStimuli(m_vecStimuli));
